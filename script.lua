@@ -1,136 +1,183 @@
--- olliE JJS 0.2 FARM GUI
+-- SERVICIOS
 local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
-local VIM = game:GetService("VirtualInputManager")
-local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
 
-local parent = pcall(function() return gethui() end) and gethui() or game:GetService("CoreGui")
+-- CONTENEDOR (CoreGui o gethui)
+local guiParent = (gethui and gethui()) or game:GetService("CoreGui")
 
-local sg = Instance.new("ScreenGui")
-sg.Name = "olliE_JJS"
-sg.ResetOnSpawn = false
-sg.IgnoreGuiInset = true
-sg.DisplayOrder = 999999
-sg.Parent = parent
+-- LIMPIAR GUI ANTERIOR
+local old = guiParent:FindFirstChild("JJS_02Farm")
+if old then old:Destroy() end
 
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 220, 0, 180)
-main.Position = UDim2.new(0.7, 0, 0.1, 0)
-main.BackgroundColor3 = Color3.fromRGB(20,20,20)
-main.BorderSizePixel = 0
-main.Active = true
-main.Draggable = true
-main.Parent = sg
-Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+-- SCREENGUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "JJS_02Farm"
+screenGui.Parent = guiParent
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.DisplayOrder = 2147483647
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -40, 0, 30)
-title.Position = UDim2.new(0, 10, 0, 0)
-title.BackgroundTransparency = 1
-title.Text = "olliE | JJS 0.2 FARM"
-title.TextColor3 = Color3.fromRGB(255,255,255)
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 16
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = main
+-- FRAME PRINCIPAL
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 220, 0, 140)
+mainFrame.Position = UDim2.new(0.5, -110, 0.5, -70)
+mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Parent = screenGui
 
-local close = Instance.new("TextButton")
-close.Size = UDim2.new(0, 30, 0, 30)
-close.Position = UDim2.new(1, -35, 0, 0)
-close.BackgroundColor3 = Color3.fromRGB(200,50,50)
-close.Text = "X"
-close.TextColor3 = Color3.fromRGB(255,255,255)
-close.Font = Enum.Font.SourceSansBold
-close.TextSize = 18
-close.Parent = main
-Instance.new("UICorner", close).CornerRadius = UDim.new(0, 6)
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 8)
+mainCorner.Parent = mainFrame
 
-local farm = Instance.new("TextButton")
-farm.Size = UDim2.new(1, -20, 0, 50)
-farm.Position = UDim2.new(0, 10, 0, 50)
-farm.BackgroundColor3 = Color3.fromRGB(80,180,80)
-farm.Text = "0.2 FARM"
-farm.TextColor3 = Color3.fromRGB(255,255,255)
-farm.Font = Enum.Font.SourceSansBold
-farm.TextSize = 20
-farm.Parent = main
-Instance.new("UICorner", farm).CornerRadius = UDim.new(0, 8)
+-- BARRA DE TÍTULO
+local titleBar = Instance.new("Frame")
+titleBar.Name = "TitleBar"
+titleBar.Size = UDim2.new(1, 0, 0, 30)
+titleBar.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+titleBar.BorderSizePixel = 0
+titleBar.Parent = mainFrame
+titleBar.ZIndex = 2
 
-local circle = Instance.new("TextButton")
-circle.Size = UDim2.new(0, 50, 0, 50)
-circle.Position = UDim2.new(0.8, 0, 0.2, 0)
-circle.BackgroundColor3 = Color3.fromRGB(80,180,80)
-circle.Text = "O"
-circle.TextColor3 = Color3.fromRGB(255,255,255)
-circle.Font = Enum.Font.SourceSansBold
-circle.TextSize = 24
-circle.Visible = false
-circle.Active = true
-circle.Draggable = true
-circle.Parent = sg
-Instance.new("UICorner", circle).CornerRadius = UDim.new(0.5, 0)
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 8)
+titleCorner.Parent = titleBar
 
-local function makeDraggable(gui)
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(1, -40, 1, 0)
+titleLabel.Position = UDim2.new(0, 10, 0, 0)
+titleLabel.Text = "0.2 FARM"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextSize = 16
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = titleBar
+titleLabel.ZIndex = 3
+
+-- BOTÓN X (OCULTAR)
+local closeBtn = Instance.new("TextButton")
+closeBtn.Name = "CloseButton"
+closeBtn.Size = UDim2.new(0, 30, 1, 0)
+closeBtn.Position = UDim2.new(1, -30, 0, 0)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+closeBtn.Font = Enum.Font.SourceSansBold
+closeBtn.TextSize = 18
+closeBtn.Parent = titleBar
+closeBtn.ZIndex = 3
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeBtn
+
+-- BOTÓN FARM
+local farmBtn = Instance.new("TextButton")
+farmBtn.Name = "FarmButton"
+farmBtn.Size = UDim2.new(0.8, 0, 0, 50)
+farmBtn.Position = UDim2.new(0.1, 0, 0.5, -10)
+farmBtn.Text = "0.2 FARM"
+farmBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+farmBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+farmBtn.Font = Enum.Font.SourceSansBold
+farmBtn.TextSize = 20
+farmBtn.Parent = mainFrame
+farmBtn.ZIndex = 2
+
+local farmCorner = Instance.new("UICorner")
+farmCorner.CornerRadius = UDim.new(0, 6)
+farmCorner.Parent = farmBtn
+
+-- CÍRCULO FLOTANTE (OCULTO)
+local circleBtn = Instance.new("TextButton")
+circleBtn.Name = "CircleButton"
+circleBtn.Size = UDim2.new(0, 50, 0, 50)
+circleBtn.Position = UDim2.new(0.5, -25, 0.5, -25)
+circleBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+circleBtn.Text = "0.2"
+circleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+circleBtn.Font = Enum.Font.SourceSansBold
+circleBtn.TextSize = 14
+circleBtn.Parent = screenGui
+circleBtn.Visible = false
+circleBtn.ZIndex = 10
+
+local circleCorner = Instance.new("UICorner")
+circleCorner.CornerRadius = UDim.new(1, 0)
+circleCorner.Parent = circleBtn
+
+-- ARRASTRE GENÉRICO
+local function makeDraggable(obj)
     local dragging, dragInput, dragStart, startPos
-    gui.InputBegan:Connect(function(input)
+    obj.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
-            startPos = gui.Position
+            startPos = obj.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then dragging = false end
             end)
         end
     end)
-    gui.InputChanged:Connect(function(input)
+    obj.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
     end)
-    UIS.InputChanged:Connect(function(input)
+    UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
-            gui.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
         end
     end)
 end
-makeDraggable(main)
-makeDraggable(circle)
 
-close.MouseButton1Click:Connect(function()
-    main.Visible = false
-    circle.Visible = true
-end)
-circle.MouseButton1Click:Connect(function()
-    circle.Visible = false
-    main.Visible = true
+makeDraggable(mainFrame)
+makeDraggable(circleBtn)
+
+-- OCULTAR / MOSTRAR
+closeBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+    circleBtn.Visible = true
 end)
 
-local function farmPlayers()
-    local char = LocalPlayer.Character
+circleBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = true
+    circleBtn.Visible = false
+end)
+
+-- SIMULAR TECLA
+local function pressKey(key)
+    VirtualInputManager:SendKeyEvent(true, key, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, key, false, game)
+end
+
+-- FARM
+local function farm()
+    pressKey(Enum.KeyCode.G)
+    pressKey(Enum.KeyCode.R)
+    task.wait(0.5)
+
+    local lp = Players.LocalPlayer
+    local char = lp.Character
     if not char then return end
     local hrp = char:FindFirstChild("HumanoidRootPart")
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    if not hrp or not hum or hum.Health <= 0 then return end
-
-    VIM:SendKeyEvent(true, Enum.KeyCode.G, false, game)
-    VIM:SendKeyEvent(true, Enum.KeyCode.R, false, game)
-    task.wait(0.1)
-    VIM:SendKeyEvent(false, Enum.KeyCode.G, false, game)
-    VIM:SendKeyEvent(false, Enum.KeyCode.R, false, game)
-    task.wait(0.2)
+    if not hrp then return end
 
     for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character then
-            local tChar = plr.Character
-            local tHrp = tChar:FindFirstChild("HumanoidRootPart")
-            local tHum = tChar:FindFirstChildOfClass("Humanoid")
-            if tHrp and tHum and tHum.Health > 0 then
-                hrp.CFrame = tHrp.CFrame * CFrame.new(0, 0, 2)
-                task.wait(0.15)
+        if plr ~= lp and plr.Character then
+            local target = plr.Character:FindFirstChild("HumanoidRootPart")
+            if target then
+                hrp.CFrame = target.CFrame * CFrame.new(0, 3, 0)
+                task.wait(0.1)
             end
         end
     end
 end
 
-farm.MouseButton1Click:Connect(farmPlayers)
+farmBtn.MouseButton1Click:Connect(farm)
