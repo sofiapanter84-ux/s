@@ -157,6 +157,38 @@ local function pressKey(key)
     VirtualInputManager:SendKeyEvent(false, key, false, game)
 end
 
+-- RECOLECTAR OBJETIVOS (jugadores + dummies)
+local function getTargets()
+    local targets = {}
+    local lp = Players.LocalPlayer
+
+    -- jugadores reales
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= lp and plr.Character then
+            local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                table.insert(targets, hrp)
+            end
+        end
+    end
+
+    -- dummies / NPCs en workspace
+    for _, obj in ipairs(workspace:GetDescendants()) do
+        if obj:IsA("Model") and obj ~= lp.Character then
+            local hum = obj:FindFirstChildOfClass("Humanoid")
+            local hrp = obj:FindFirstChild("HumanoidRootPart")
+            if hum and hrp and hum.Health > 0 then
+                local lowerName = string.lower(obj.Name)
+                if string.find(lowerName, "dummy") then
+                    table.insert(targets, hrp)
+                end
+            end
+        end
+    end
+
+    return targets
+end
+
 -- FARM
 local function farm()
     pressKey(Enum.KeyCode.G)
@@ -169,13 +201,16 @@ local function farm()
     local hrp = char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
 
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= lp and plr.Character then
-            local target = plr.Character:FindFirstChild("HumanoidRootPart")
-            if target then
-                hrp.CFrame = target.CFrame * CFrame.new(0, 3, 0)
-                task.wait(0.1)
-            end
+    local targets = getTargets()
+    if #targets == 0 then
+        return
+    end
+
+    for _, targetPart in ipairs(targets) do
+        if targetPart and targetPart.Parent then
+            local goal = targetPart.CFrame * CFrame.new(0, 3, 0)
+            char:PivotTo(goal)
+            task.wait(0.08)
         end
     end
 end
